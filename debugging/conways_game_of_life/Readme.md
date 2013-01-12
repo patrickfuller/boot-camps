@@ -175,9 +175,6 @@ is difficult to show through IPython, so I'll leave it up to you. Set some
 traces in "`3_conway_pre_debugged.py`" and see if you can find the bug. Once
 you find it (or give up), keep reading.
 
-######**SPOILER:** The issue is that I accidentally defined `(x, y)` as a
-neighbor. Removing that fixes the code, and the glider glides.
-
 ##Step 4: Speed and profiling
 
 This code is now functional and follows PEP8 standards, but maybe it could be
