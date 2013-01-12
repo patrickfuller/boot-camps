@@ -1,16 +1,23 @@
-In this example, we will bring together everything we learned about debugging to fix a script that runs Conway's game of life. Before we do that, however, let's answer the most obvious question here...
+In this example, we will bring together everything we learned about debugging to
+fix a script that runs Conway's game of life. Before we do that, however, let's
+answer the most obvious question here...
 
 ##What is Conway's game of life?
 
-Basically, it's a discrete two-dimensional grid where every cell can be "alive" or "dead". Starting with a set of cells marked "alive", we can "evolve" the cells to the next generation by following these simple rules:
+Basically, it's a discrete two-dimensional grid where every cell can be "alive"
+or "dead". Starting with a set of cells marked "alive", we can "evolve" the
+cells to the next generation by following these simple rules:
 
  * Any living cell with fewer than two neighbors dies (underpopulation)
  * Any living cell with more than three neighbors dies (overpopulation)
  * Any empty cell with three neighbors becomes a living cell (reproduction)   
 
-There are a lot of cool things you can do with this, and, for that, I defer to the [wiki](http://en.wikipedia.org/wiki/Conway's_Game_of_Life). Let's get on with debugging.
+There are a lot of cool things you can do with this, and, for that, I defer to
+the [wiki](http://en.wikipedia.org/wiki/Conway's_Game_of_Life). Let's get on
+with debugging.
 
-The code below is intended to be an implementation of Conway's game of life, but it's pretty terrible.
+The code below is intended to be an implementation of Conway's game of life,
+but it's pretty terrible.
 
 ```python
 from math import sqrt
@@ -42,7 +49,8 @@ print conway(glider)
 
 ##Step 1: Linting
 
-Let's start by running it through `pyflakes` and fixing the blatant typos. Running "`pyflakes 1_conway_pre_linted.py`" gives:
+Let's start by running it through `pyflakes` and fixing the blatant typos.
+Running "`pyflakes 1_conway_pre_linted.py`" gives:
 
 ```
 1_conway_pre_linted.py:9: 'sqrt' imported but unused
@@ -51,7 +59,10 @@ Let's start by running it through `pyflakes` and fixing the blatant typos. Runni
 1_conway_pre_linted.py:25: undefined name 'newPopluation'
 ```
 
-It caught an unused import and some typos. In this little example, `pyflakes` saved us from having to run the script multiple times to find each error; imagine how useful that is in larger code! If we fix the code, it should now run.
+It caught an unused import and some typos. In this little example, `pyflakes`
+saved us from having to run the script multiple times to find each error;
+imagine how useful that is in larger code! If we fix the code, it should now
+run.
 
 ```python
 def conway(population, 
@@ -87,7 +98,7 @@ Running this gives
 
 ##Step 2: Formatting
 
-Now that we have running code, let's clean it up. Running "`pep8 2_conway_pre_formatted.py`",
+Now that we have running code, let's clean it up. Running `pep8 2_conway_pre_formatted.py`,
 
 ```
 2_conway_pre_formatted.py:10:23: W291 trailing whitespace
@@ -104,9 +115,12 @@ Now that we have running code, let's clean it up. Running "`pep8 2_conway_pre_fo
 2_conway_pre_formatted.py:29:23: E225 missing whitespace around operator (x12)
 ```
 
-Wow, that's a lot of issues! I recommend going through each one and figuring out why it deviates from the PEP8 standard. It's obnoxious, but it'll help you write better code the first time around. 
+Wow, that's a lot of issues! I recommend going through each one and figuring
+out why it deviates from the PEP8 standard. It's obnoxious, but it'll help you
+write better code the first time around. 
 
-Even with all of these issues, there are still some things that `pep8` isn't telling us.
+Even with all of these issues, there are still some things that `pep8` isn't
+telling us.
 
  * Most importantly, where are the comments!? _Always_ comment code!
  * Some variables are in `camelCase`. That's bad. Rewrite as `snake_case`.
@@ -152,23 +166,31 @@ print conway(glider)
 
 ##Step 3: Deep-rooted debugging
 
-According to successful implementations of Conway's game of life, our given initial population should cause the living cells to "glide" across the grid over many generations. However, it's not doing that. What's going on?
+According to successful implementations of Conway's game of life, our given
+initial population should cause the living cells to "glide" across the grid
+over many generations. However, it's not doing that. What's going on?
 
-Using `pdb`, we can follow the state of every variable as the code runs. This is difficult to show through IPython, so I'll leave it up to you. Set some traces in "`3_conway_pre_debugged.py`" and see if you can find the bug. Once you find it (or give up), keep reading.
+Using `pdb`, we can follow the state of every variable as the code runs. This
+is difficult to show through IPython, so I'll leave it up to you. Set some
+traces in "`3_conway_pre_debugged.py`" and see if you can find the bug. Once
+you find it (or give up), keep reading.
 
-######**SPOILER:** The issue is that I accidentally defined `(x, y)` as a neighbor. Removing that fixes the code, and the glider glides.
+######**SPOILER:** The issue is that I accidentally defined `(x, y)` as a
+neighbor. Removing that fixes the code, and the glider glides.
 
 ##Step 4: Speed and profiling
 
-This code is now functional and follows PEP8 standards, but maybe it could be faster. For a baseline, let's time the current script over 1,000,000 generations. Running "`time python 4_conway_pre_profiled.py`" results in
+This code is now functional and follows PEP8 standards, but maybe it could be
+faster. For a baseline, let's time the current script over 1,000,000
+generations. Running "`time python 4_conway_pre_profiled.py`" results in
 
 ```
 real	1m9.455s
 user	1m9.228s
-sys	 0m0.012s
+sys	    0m0.012s
 ```
 
-To break down the locations of the speed constraints, we can run "`python -m cProfile -s time 4_conway_pre_profiled.py`"
+To break down the locations of the speed constraints, we can run `python -m cProfile -s time 4_conway_pre_profiled.py`
 
 ```
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
@@ -183,7 +205,13 @@ To break down the locations of the speed constraints, we can run "`python -m cPr
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 ```
 
-Going through everything here is _waay_ beyond the scope of the tutorial. However, I want to introduce one speed boost that will not only improve performance, but will also simplify our code and improve its readability. This involves the use of _sets_, which are collections that only store unique elements. They are much better than lists when you need to check for the existence of an element, which we do a lot in this script. Refactoring to use sets results in:
+Going through everything here is _waay_ beyond the scope of the tutorial.
+However, I want to introduce one speed boost that will not only improve
+performance, but will also simplify our code and improve its readability. This
+involves the use of _sets_, which are collections that only store unique
+elements. They are much better than lists when you need to check for the
+existence of an element, which we do a lot in this script. Refactoring to use
+sets results in:
 
 ```python
 def conway(population, generations=100):
@@ -219,8 +247,12 @@ glider = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 2)]
 print conway(glider)
 ```
 
-The code now clocks in at 50.3 seconds, which is 38% increase in speed. That's nice.
+The code now clocks in at 50.3 seconds, which is 38% increase in speed.
+That's nice.
 
 ##Closing thoughts
 
-This notebook just showcased linting, coding styles, finding bugs, and improving code speed. I know this all seems like a lot of work, but it will make you produce much better code (and, as you get better, your debugging time will decrease rapidly). Stick with it!
+This notebook just showcased linting, coding styles, finding bugs, and
+improving code speed. I know this all seems like a lot of work, but it will
+make you produce much better code (and, as you get better, your debugging time
+will decrease rapidly). Stick with it!
