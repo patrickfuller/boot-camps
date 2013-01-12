@@ -50,7 +50,7 @@ print conway(glider)
 ##Step 1: Linting
 
 Let's start by running it through `pyflakes` and fixing the blatant typos.
-Running "`pyflakes 1_conway_pre_linted.py`" gives:
+Running `pyflakes 1_conway_pre_linted.py` gives:
 
 ```
 1_conway_pre_linted.py:9: 'sqrt' imported but unused
@@ -172,14 +172,14 @@ over many generations. However, it's not doing that. What's going on?
 
 Using `pdb`, we can follow the state of every variable as the code runs. This
 is difficult to show through IPython, so I'll leave it up to you. Set some
-traces in "`3_conway_pre_debugged.py`" and see if you can find the bug. Once
+traces in `3_conway_pre_debugged.py` and see if you can find the bug. Once
 you find it (or give up), keep reading.
 
 ##Step 4: Speed and profiling
 
 This code is now functional and follows PEP8 standards, but maybe it could be
 faster. For a baseline, let's time the current script over 1,000,000
-generations. Running "`time python 4_conway_pre_profiled.py`" results in
+generations. Running `time python 4_conway_pre_profiled.py` results in
 
 ```
 real	1m9.455s
